@@ -8,12 +8,12 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "123" is now active!');
+	console.log('Congratulations, your extension "ext-md" is now active!');
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('123.helloWorld', () => {
+	let disposable = vscode.commands.registerCommand('md-ext.helloWorld', () => {
 		// The code you place here will be executed every time your command is executed
 
 		// Display a message box to the user
@@ -26,6 +26,12 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 			let origin = event.document.getText();
+
+			let lineSeparator = '\n';
+			if (origin.indexOf('\r\n') !== -1) {
+				lineSeparator = '\r\n';
+			}
+
 			let last = origin.indexOf('#');
 			let header;
 			let content = "";
@@ -40,36 +46,37 @@ export function activate(context: vscode.ExtensionContext) {
 			let date = new Date();
 			let timestamp = date.getTime();
 			let time = date.toLocaleString();
-			if (header.startsWith('---\r\n') && header.lastIndexOf('---\r\n') !== -1) {
+			console.log("start "+header.startsWith('---' + lineSeparator));
+			if (header.startsWith('---' + lineSeparator) && header.lastIndexOf('---' + lineSeparator) !== -1) {
 				console.log('have header');
-				let headers = header.split('\r\n');
+				let headers = header.split(lineSeparator);
 				let arrHeader: string[] = [];
 
 				headers.forEach(s => {
-					if (s.indexOf('updateTime:') !== -1) {
-						s = 'updateTime:' + time;
+					if (s.indexOf('updateTime: ') !== -1) {
+						s = 'updateTime: ' + time;
 					}
-					if (s.indexOf('timestamp:') !== -1) {
-						s = 'timestamp:' + timestamp;
+					if (s.indexOf('timestamp: ') !== -1) {
+						s = 'timestamp: ' + timestamp;
 					}	
 					arrHeader.push(s);
 				});
 				headerSize = headers.length;
-				newHeader = arrHeader.join('\r\n');
+				newHeader = arrHeader.join(lineSeparator);
 				console.log('new header: '+ newHeader);
 			} else {
 				console.log('not have header: '+ header);
 				let headers: string[] = [];
 				headers.push('---');
 
-				headers.push('createTime:'+ time);
-				headers.push('updateTime:'+ time);
-				headers.push('timestamp:'+ timestamp);
+				headers.push('createTime: '+ time);
+				headers.push('updateTime: '+ time);
+				headers.push('timestamp: '+ timestamp);
 
-				headers.push('---\r\n');
+				headers.push('---' + lineSeparator);
 
-				headerSize = header.split('\r\n').length === 0? 1 : header.split('\r\n').length;
-				newHeader = headers.join('\r\n');
+				headerSize = header.split(lineSeparator).length === 0? 1 : header.split(lineSeparator).length;
+				newHeader = headers.join(lineSeparator);
 			}
 			
 			event.waitUntil(vscode.window.showTextDocument(event.document).then(editor=>{
