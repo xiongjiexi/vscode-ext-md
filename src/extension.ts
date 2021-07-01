@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
 			let headerSize: number;
 			let date = new Date();
 			let timestamp = date.getTime();
-			let time = date.toLocaleString('chinese', {hour12:false});
+			let time = date.toLocaleString('zh-hant', {hour12:false});
 			console.log("start "+header.startsWith('---' + lineSeparator));
 			if (header.startsWith('---' + lineSeparator) && header.lastIndexOf('---' + lineSeparator) !== -1) {
 				console.log('have header');
